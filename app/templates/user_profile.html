@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Hi {{ user.username }}!</h1>
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <img class="rounded account-img" style="max-height:128px" src="{{ image_file }}">
+        </div>
+        <div class="col-md-3 align-items-center justify-content-center">
+            <p class="d-flex">Username: {{ user.username }}<br>
+            Email: {{ user.email }}</p>
+        </div>
+    </div>
+
+    <!-- Edit form block -->
+    <div class="content-section">
+        <form method="POST" action="" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom my-4">Edit user profile</legend>
+
+                <!-- Username -->
+                <div class="form-group">
+                    {{ form.username.label(class="form-control-label")}}
+
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control form-control-lg")}}
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label")}}
+
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg")}}
+                    {% endif %}
+                </div>
+
+                <!-- Picture -->
+                <div class="form-group">
+                    {{ form.picture.label(class="form-control-label")}}<br>
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span><br>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <!-- Submit button -->
+            <div class="form-group py-4">
+                <button type="submit" class="btn btn-outline-info">Update</button>
+                <a class="btn btn-primary ms-4" role="button" href="{{ url_for( "change_password" ) }}">Change password</a>
+            </div>
+        </form>
+    </div> <!-- End of registration form block -->
+{% endblock %}

@@ -1,0 +1,91 @@
+<!-- Base parent template -->
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for( "static", filename="css/bootstrap.min.css" ) }}">
+    <link rel="stylesheet" href="{{ url_for( "static", filename="css/stylesheet.css" ) }}">
+    <link rel="icon" type="image/png" href="{{ url_for( "static", filename="img/favicon.png" ) }}">
+
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    {% if title %}
+        <title> {{ title }} - My Blog Page</title>
+    {% else %}
+        <title>Super blog</title>
+    {% endif %}
+</head>
+<body class="d-flex flex-column h-100">
+    <header class="p-3 bg-dark text-white">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a class="d-flex align-items-center mb-2 mb-lg-0 pe-lg-4 text-white text-decoration-none" href="#">My Blog Page</a>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 ps-lg-4 justify-content-center mb-md-0">
+                    <li><a class="nav-link px-2" href="{{ url_for( "homepage" ) }}">Home</a></li>
+                    <li><a class="nav-link px-2" href="{{ url_for( "posts" ) }}">Posts</a></li>
+                    <li><a class="nav-link px-2" href="{{ url_for( "post_new" ) }}">New Post</a></li>
+                    <li><a class="nav-link px-2" href="{{ url_for( "about" ) }}">About</a></li>
+                </ul>
+                <div class="text-end">
+                    {% if current_user.is_authenticated %}
+                        <button type="button" class="btn btn-outline-light me-2" 
+                        onclick="window.location.href='{{ url_for( "profile" ) }}';">{{ user.username }}</button>
+                        <button type="button" class="btn btn-outline-secondary me-2 text-secondary" 
+                        onclick="window.location.href='{{ url_for( "logout" ) }}';">Log out</button>
+                    {% else %}
+                        <button type="button" class="btn btn-outline-light me-2" 
+                        onclick="window.location.href='{{ url_for( "login" ) }}';">Log In</button>
+                        <button type="button" class="btn btn-warning" 
+                        onclick="window.location.href='{{ url_for( "register" ) }}';">Sign-up</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-shrink-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 pt-2 px-3 bg-light">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Block for child insertion -->
+                    {% block content %}
+                    {% endblock %}
+                    <!-- End of block for child insertion -->
+                </div>
+                <div class="col-md-4 pt-2 px-3">
+                    <h3>Sidebar</h3>
+                    <p>
+                        Vestibulum nibh nisi, auctor sit amet sodales vel, tempor ut ipsum. 
+                        Ut dictum dui ac mauris ornare, at ullamcorper augue iaculis. Proin at ante eros. 
+                        Suspendisse maximus fermentum diam nec consequat. 
+                    </p>
+                    <ul class="list-group">
+                        <li class="list-group-item">Cras justo odio</li>
+                        <li class="list-group-item">Dapibus ac facilisis in</li>
+                        <li class="list-group-item">Morbi leo risus</li>
+                        <li class="list-group-item">Porta ac consectetur ac</li>
+                        <li class="list-group-item">Vestibulum at eros</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-dark"">
+        <div class="container">
+            <p class="text-muted m-auto">Copyright &copy Dr. Who</p>
+        </div>
+    </footer>
+</body>
+</html>

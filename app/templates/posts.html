@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h1>Blogs Page</h1>
+    {% if posts %}
+        {% for post in posts %}
+        <div class="row mt-4">
+            <div class="col-md-2">
+                <img class="rounded article-img" style="max-height:128px" src="{{ url_for("static", filename="/img/profiles/" + post.author.image_file) }}">
+            </div>
+            <div class="col-md-10">
+                <h3 class="mb-0">
+                   <a class="p-0 m-0 mt-2 text-decoration-none" href="{{ url_for("post_id", _id=post.id) }}">{{ post.title }}</a>
+                </h3>
+                <p class="text-muted m-0 pb-2">{{ post.time_updated.strftime("%Y-%m-%d %H:%M") }}</p>
+                <p>{{ post.body }}</p>
+                <p><i>{{ post.author.username }}</i></p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <h2>No posts available</h2>
+    {% endif %}
+
+{% endblock %}

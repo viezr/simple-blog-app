@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h1>Home Page</h1>
+    <p>
+        Phasellus ultrices in orci a luctus. Donec faucibus augue est, vel hendrerit massa dictum ac. 
+        Sed id mauris commodo, viverra diam eget, luctus erat. Aliquam cursus finibus urna vitae semper. 
+        Morbi hendrerit ornare aliquam. Phasellus ut porttitor est, elementum posuere tortor. 
+        Pellentesque enim turpis, suscipit mattis iaculis ut, gravida quis quam. 
+    </p>
+    {% if posts %}
+        <h2>Last three posts:</h2>
+        {% for post in posts %}
+            <div>
+                <h3 class="mb-0">
+                   <a class="p-0 m-0 mt-2 text-decoration-none" href="posts/{{ post.id }}">{{ post.title }}</a>
+                </h3>
+                <p class="text-muted m-0 pb-2">{{ post.time_updated.strftime("%Y-%m-%d %H:%M") }}</p>
+                <p>{{ post.body }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>No posts available</h2>
+    {% endif %}
+
+{% endblock %}

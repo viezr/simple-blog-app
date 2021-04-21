@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+    <!-- Create new post form block -->
+    <div class="content-section">
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Create new post!</legend>
+
+                <!-- Title -->
+                <div class="form-group">
+                    {{ form.title.label(class="form-control-label")}}
+
+                    {% if form.title.errors %}
+                        {{ form.title(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.title.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.title(class="form-control form-control-lg")}}
+                    {% endif %}
+                </div>
+
+                <!-- Body -->
+                <div class="form-group">
+                    {{ form.body.label(class="form-control-label")}}
+
+                    {% if form.body.errors %}
+                        {{ form.body(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.body.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.body(class="form-control form-control-lg")}}
+                    {% endif %}
+                </div>
+
+            </fieldset>
+            <!-- Submit button -->
+            <div class="form-group py-4">
+                <button type="submit" class="btn btn-outline-info">Post It</button>
+            </div>
+        </form>
+    </div> <!-- End of Log In form block -->
+{% endblock %}

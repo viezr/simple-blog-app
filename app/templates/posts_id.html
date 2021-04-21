@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Post's information Page</h1>
+        <div class="row mt-4">
+            <div class="col-md-2">
+                <img class="rounded article-img" style="max-height:128px" src="{{ url_for("static", filename="/img/profiles/" + post.author.image_file) }}">
+            </div>
+            <div class="col-md-10">
+                <h2>{{ post.title }}</h2>
+                <p>{{ post.time_updated.strftime("%Y-%m-%d %H:%M") }}</p>
+                <p>{{ post.body }}</p>
+                <p><i>Author: {{ post.author.username }}</i></p>
+            </div>
+        </div>
+    <div class="py-4">
+        {% if post.author == current_user %}
+            <a class="btn btn-primary" role="button" href="{{ url_for("post_edit", _id=post.id) }}">Change post</a>
+            <a class="btn btn-primary ms-4" role="button" href="{{ url_for("post_delete", _id=post.id) }}">Delete post</a>
+        {% endif %}
+    </div>
+
+{% endblock %}
