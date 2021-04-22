@@ -7,16 +7,45 @@
             </div>
             <div class="col-md-10">
                 <h2>{{ post.title }}</h2>
+                {% if post.image_file %}
+                    <img class="article-img" style="max-height:256px" src="{{ url_for("static", filename="/img/posts/" + post.image_file) }}">
+                {% endif %}
                 <p>{{ post.time_updated.strftime("%Y-%m-%d %H:%M") }}</p>
                 <p>{{ post.body }}</p>
                 <p><i>Author: {{ post.author.username }}</i></p>
             </div>
         </div>
-    <div class="py-4">
+    <div>
         {% if post.author == current_user %}
-            <a class="btn btn-primary" role="button" href="{{ url_for("post_edit", _id=post.id) }}">Change post</a>
-            <a class="btn btn-primary ms-4" role="button" href="{{ url_for("post_delete", _id=post.id) }}">Delete post</a>
+            <div class="py-4">
+                <a class="btn btn-primary" role="button" href="{{ url_for("post_edit", _id=post.id) }}">Change post</a>
+                <button class="btn btn-primary ms-4" onclick="deletePost()">Delete</button>
+            </div>
+            <!-- Delete form block -->
+            <div class="d-none" id="question">
+                <form class="pb-4" method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Are you sure you want to delete this post?</legend>
+                    </fieldset>
+                    <!-- Submit button -->
+                        <button type="submit" class="btn btn-outline-info">Delete</button>
+                        <button type="button" class="btn btn-primary ms-4" onclick="deletePost()">Cancel</button>
+                </form>
+            </div> <!-- End of Delete form block -->
+
         {% endif %}
     </div>
+
+    <script>
+        function deletePost() {
+            var divQuestion = document.getElementById("question");
+            if (divQuestion.className === "d-none") {
+                divQuestion.className = "d-inline";
+            } else {
+                divQuestion.className = "d-none";
+            }
+        }
+    </script>
 
 {% endblock %}

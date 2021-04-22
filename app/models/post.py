@@ -17,6 +17,7 @@ class Post(db.Model):
     body = db.Column(db.Text, nullable=False)
     time_created = db.Column(db.DateTime, index=True, default=datetime.utcnow, nullable=False)
     time_updated = db.Column(db.DateTime, index=True, default=datetime.utcnow, nullable=False)
+    image_file = db.Column(db.String(20))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False )
     def __str__(self):
         """

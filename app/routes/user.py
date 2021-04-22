@@ -6,8 +6,15 @@ from flask_login import logout_user, current_user, login_user, login_required
 from app import app, db
 from app.forms.user import RegisterForm, LoginForm, UpdateForm, PasswordForm
 from app.models.user import User
+from app.models.post import Post
 from app.routes.general import homepage
 from app.utils.compressor import save_picture
+
+@app.route("/user/<string:username>", methods=["GET"])
+def user_public(username=None):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = Post.query.filter_by(author=user).order_by(Post.time_updated.desc())
+    return render_template("user_public.html", posts=posts, user=user, title=f"{user.username}'s profile")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -25,7 +32,7 @@ def login():
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
-        return redirect(next_page) if next_page else url_for("homepage")
+        return redirect(next_page) if next_page else redirect(url_for("homepage"))
     return render_template("user_login.html", title="Log In", form=form)
 
 
@@ -82,9 +89,8 @@ def profile():
     form = UpdateForm()
 
     if request.method == "POST" and form.validate():
-        print(form.picture.data)
         if form.picture.data:
-            picture_file = save_picture(form.picture.data)
+            picture_file = save_picture(form.picture.data, "user")
             current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data

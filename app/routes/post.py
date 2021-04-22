@@ -8,7 +8,7 @@ from app import app, db
 from app.forms.posts import PostFormNew, PostFormEdit, PostFormDelete
 #from app.models.user import User
 from app.models.post import Post
-
+from app.utils.compressor import save_picture
 
 @app.route("/posts/new", methods=["GET", "POST"])
 @login_required
@@ -26,12 +26,12 @@ def post_new():
         db.session.add(current_user)
         db.session.commit()
         flash("Congrats! Your post created successfully!", "success")
-        return redirect(url_for("post", id=post.id))
+        return redirect(url_for("post_id", _id=post.id))
 
     return render_template("posts_new.html", user=current_user, form=form, title="New Post")
 
 
-@app.route("/posts/<int:_id>", methods=["GET"])
+@app.route("/posts/<int:_id>", methods=["GET", "POST"])
 @login_required
 def post_id(_id=None):
     """
@@ -41,7 +41,15 @@ def post_id(_id=None):
     if post_db is None:
         flash("Post with that ID not found", "danger")
         return redirect(url_for("posts"))
-    return render_template("posts_id.html", user=current_user, post=post_db, title="Post info")
+
+    form = PostFormDelete()
+    if request.method == "POST" and form.validate():
+        db.session.delete(post_db)
+        db.session.commit()
+        flash("Your post has been deleted!", "success")
+        return redirect(url_for("posts"))
+
+    return render_template("posts_id.html", form=form, user=current_user, post=post_db, title="Post info")
 
 
 @app.route("/posts/<int:_id>/edit", methods=["GET", "POST"])
@@ -56,30 +64,22 @@ def post_edit(_id=None):
 
     form = PostFormEdit()
     if request.method == "POST" and form.validate():
+        print(form.picture.data)
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data, "post")
+            post_db.image_file = picture_file
         post_db.title = form.title.data
         post_db.body = form.body.data
         post_db.time_updated = datetime.utcnow()
         db.session.add(post_db)
         db.session.commit()
         flash("Congrats! Your post successfully udated!", "success")
-        return redirect(url_for("post", _id=post.id))
+        return redirect(url_for("post_id", _id=post_db.id))
     else:
         form.title.data = post_db.title
         form.body.data = post_db.body
-    return render_template("posts_edit.html", user=current_user, form=form, title="Edit Post")
 
-
-@app.route("/posts/<int:_id>/delete", methods=["GET", "POST"])
-@login_required
-def post_delete(_id=None):
-    """
-    Edit post route
-    """
-    form = PostFormDelete()
-    post_db = Post.query.get(_id)
-    if request.method == "POST" and form.validate():
-        db.session.delete(post_db)
-        db.session.commit()
-        flash("Congrats! Your post deleted!", "success")
-        return redirect(url_for("posts"))
-    return render_template("posts_delete.html", user=current_user, form=form, title="Delete Post")
+    image_file = None
+    if post_db.image_file:
+        image_file = url_for('static', filename="img/posts/" + post_db.image_file)
+    return render_template("posts_edit.html", user=current_user, image_file=image_file, form=form, title="Edit Post")

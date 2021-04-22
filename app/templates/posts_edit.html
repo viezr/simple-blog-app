@@ -2,10 +2,10 @@
 {% block content %}
     <!-- Edit post form block -->
     <div class="content-section">
-        <form method="POST" novalidate>
+        <form method="POST" enctype="multipart/form-data" novalidate>
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Edit post</legend>
+                <legend class="border-bottom mb-4">Update post</legend>
 
                 <!-- Title -->
                 <div class="form-group">
@@ -38,10 +38,20 @@
                         {{ form.body(class="form-control form-control-lg")}}
                     {% endif %}
                 </div>
-            </fieldset>
+
+                <!-- Picture -->
+                <div class="form-group">
+                    {{ form.picture.label(class="form-control-label")}}<br>
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span><br>
+                        {% endfor %}
+                    {% endif %}
+                </div>            </fieldset>
             <!-- Submit button -->
             <div class="form-group py-4">
-                <button type="submit" class="btn btn-outline-info">Edit Post</button>
+                <button type="submit" class="btn btn-outline-info">Update Post</button>
             </div>
         </form>
     </div> <!-- End of Log In form block -->
