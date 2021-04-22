@@ -9,8 +9,8 @@
         Pellentesque enim turpis, suscipit mattis iaculis ut, gravida quis quam. 
     </p>
     {% if posts %}
-        <h2>Last three posts:</h2>
-        {% for post in posts %}
+        <h2>Last posts:</h2>
+        {% for post in posts.items %}
             <div>
                 <h3 class="mb-0">
                    <a class="p-0 m-0 mt-2 text-decoration-none" href="posts/{{ post.id }}">{{ post.title }}</a>
@@ -19,6 +19,18 @@
                 <p>{{ post.body }}</p>
             </div>
         {% endfor %}
+
+        {% for page_num in posts.iter_pages() %}
+            {% if page_num %}
+                {% if posts.page == page_num %}
+                    <a class="btn btn-info mb-4" href="{{ url_for("homepage", page=page_num) }}">{{ page_num }}</a>
+                {% else %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for("homepage", page=page_num) }}">{{ page_num }}</a>
+                {% endif%}
+            {% endif%}
+        {% endfor %}
+
+
     {% else %}
         <h2>No posts available</h2>
     {% endif %}
