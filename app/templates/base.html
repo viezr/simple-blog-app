@@ -29,15 +29,11 @@
                 </ul>
                 <div class="text-end">
                     {% if current_user.is_authenticated %}
-                        <button type="button" class="btn btn-outline-light me-2" 
-                        onclick="window.location.href='{{ url_for( "profile" ) }}';">{{ user.username }}</button>
-                        <button type="button" class="btn btn-outline-secondary me-2 text-secondary" 
-                        onclick="window.location.href='{{ url_for( "logout" ) }}';">Log out</button>
+                        <button type="button" class="btn btn-outline-light me-2" onclick="window.location.href='{{ url_for( "profile" ) }}';">{{ user.username }}</button>
+                        <button type="button" class="btn btn-outline-secondary me-2 text-secondary" onclick="window.location.href='{{ url_for( "logout" ) }}';">Log out</button>
                     {% else %}
-                        <button type="button" class="btn btn-outline-light me-2" 
-                        onclick="window.location.href='{{ url_for( "login" ) }}';">Log In</button>
-                        <button type="button" class="btn btn-warning" 
-                        onclick="window.location.href='{{ url_for( "register" ) }}';">Sign-up</button>
+                        <button type="button" class="btn btn-outline-light me-2" onclick="window.location.href='{{ url_for( "login" ) }}';">Log In</button>
+                        <button type="button" class="btn btn-warning" onclick="window.location.href='{{ url_for( "register" ) }}';">Sign-up</button>
                     {% endif %}
                 </div>
             </div>

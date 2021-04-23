@@ -5,9 +5,12 @@
         <div class="col-md-3">
             <img class="rounded account-img" style="max-height:128px" src="{{ image_file }}">
         </div>
-        <div class="col-md-3 align-items-center justify-content-center">
-            <p class="d-flex">Username: {{ user.username }}<br>
-            Email: {{ user.email }}</p>
+        <div class="col-md-9 align-items-center justify-content-center">
+            <p>
+                Username: {{ user.username }}<br>
+                Email: {{ user.email }}<br>
+                <a class="text-decoration-none" href="{{ url_for("user_public", username=user.username) }}"><b>Posts</b></a>
+            </p>
         </div>
     </div>
 

@@ -5,21 +5,24 @@
             <div class="col-md-2">
                 <img class="rounded article-img" style="max-height:128px" src="{{ url_for("static", filename="/img/profiles/" + post.author.image_file) }}">
             </div>
-            <div class="col-md-10">
+            <div class="col-md-10 pb-4">
                 <h2>{{ post.title }}</h2>
                 {% if post.image_file %}
                     <img class="article-img" style="max-height:256px" src="{{ url_for("static", filename="/img/posts/" + post.image_file) }}">
                 {% endif %}
-                <p>{{ post.time_updated.strftime("%Y-%m-%d %H:%M") }}</p>
                 <p>{{ post.body }}</p>
-                <p><i>Author: {{ post.author.username }}</i></p>
+                <p class="text-muted m-0">Updated: {{ post.time_updated.strftime("%Y-%m-%d %H:%M") }}</p>
+                <p class="text-muted m-0">Views: {{ post.views_counter }}</p>
+                <p class="text-muted d-inline">Author: </p><a class="text-decoration-none" href="{{ url_for("user_public", username=post.author.username) }}"><i>{{ post.author.username }}</i></a>
             </div>
         </div>
     <div>
         {% if post.author == current_user %}
             <div class="py-4">
                 <a class="btn btn-primary" role="button" href="{{ url_for("post_edit", _id=post.id) }}">Change post</a>
-                <button class="btn btn-primary ms-4" onclick="deletePost()">Delete</button>
+                <div class="d-inline" id="div-button">
+                    <button class="btn btn-primary ms-4" onclick="deletePost()">Delete</button>
+                </div>
             </div>
             <!-- Delete form block -->
             <div class="d-none" id="question">
@@ -33,17 +36,19 @@
                         <button type="button" class="btn btn-primary ms-4" onclick="deletePost()">Cancel</button>
                 </form>
             </div> <!-- End of Delete form block -->
-
         {% endif %}
     </div>
 
     <script>
         function deletePost() {
             var divQuestion = document.getElementById("question");
+            var divButton = document.getElementById("div-button");
             if (divQuestion.className === "d-none") {
                 divQuestion.className = "d-inline";
+                divButton.className = "d-none";
             } else {
                 divQuestion.className = "d-none";
+                divButton.className = "d-inline";
             }
         }
     </script>

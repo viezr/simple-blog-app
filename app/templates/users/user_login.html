@@ -51,4 +51,9 @@
             New User? <a class="ml-2" href="{{ url_for('register') }}">Register!</a>
         </small>
     </div>
+    <div class="border-top py-3">
+        <small class="text-muted">
+            Forgot password? <a class="ml-2" href="{{ url_for('reset_password_token') }}">Reset password</a>
+        </small>
+    </div>
 {% endblock %}

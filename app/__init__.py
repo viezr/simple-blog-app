@@ -2,12 +2,11 @@
 App's Core
 """
 from flask import Flask
-from app.configs import Config
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-#import psycopg2
-
+from flask_mail import Mail
+from app.configs import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -18,6 +17,8 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = "login"
 login.login_message_category = "info"
+
+mail = Mail(app)
 
 from app.models.user import User
 from app.models.post import Post

@@ -4,17 +4,71 @@ User route module
 from flask import request, redirect, render_template, flash, url_for
 from flask_login import logout_user, current_user, login_user, login_required
 from app import app, db
-from app.forms.user import RegisterForm, LoginForm, UpdateForm, PasswordForm
+from app.forms.user import RegisterForm, LoginForm, UpdateForm, PasswordForm, PasswordResetQueryForm, PasswordResetForm
 from app.models.user import User
 from app.models.post import Post
 from app.routes.general import homepage
 from app.utils.compressor import save_picture
+from app.utils.email import send_reset_email
+
 
 @app.route("/user/<string:username>", methods=["GET"])
-def user_public(username=None):
+def user_public(username: str):
+    """
+    Public user profile
+    """
     user = User.query.filter_by(username=username).first_or_404()
-    posts = Post.query.filter_by(author=user).order_by(Post.time_updated.desc())
-    return render_template("user_public.html", posts=posts, user=user, title=f"{user.username}'s profile")
+    page = request.args.get("page", 1, type=int)
+    posts_db = Post.query.filter_by(
+        author=user).order_by(
+        Post.time_updated.desc()).paginate(page=page,per_page=6)
+
+    return render_template("users/user_public.html", posts=posts_db,
+                           user=user, title=f"{user.username}'s profile")
+
+
+@app.route("/reset_password/", methods=["GET", "POST"])
+def reset_password_token():
+    """
+    Request reset password
+    """
+    if current_user.is_authenticated:
+        flash("User already logged in!", "success")
+        return redirect(url_for('homepage'))
+
+    form = PasswordResetQueryForm()
+    if request.method == "POST" and form.validate():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash("An email has been sent with instructions", "info")
+        return redirect(url_for("login"))
+    return render_template("users/user_password_token.html",
+                           title="Reset password form", form=form)
+
+
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    """
+    Reset password with token
+    """
+    if current_user.is_authenticated:
+        flash("User already logged in!", "success")
+        return redirect(url_for('homepage'))
+
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash("This is invalid o expired token", "warning")
+        return redirect(url_for('reset_password'))
+    form = PasswordResetForm()
+    if request.method == "POST" and form.validate():
+        user.set_password(form.password.data)
+        db.session.commit()
+
+        flash("Password successfully changed", "succsess")
+        return redirect(url_for("login"))
+    return render_template("users/user_password_reset.html",
+                           title="Reset password", form=form)
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -32,8 +86,9 @@ def login():
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
-        return redirect(next_page) if next_page else redirect(url_for("homepage"))
-    return render_template("user_login.html", title="Log In", form=form)
+        return redirect(next_page) if next_page else redirect(
+            url_for("homepage"))
+    return render_template("users/user_login.html", title="Log In", form=form)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -54,7 +109,8 @@ def register():
         flash("Congrats! Your account created successfully!", "success")
         return redirect(url_for("login"))
 
-    return render_template("user_register.html", form=form, title="Register")
+    return render_template("users/user_register.html",
+                           form=form, title="Register")
 
 
 @app.route("/password", methods=["GET", "POST"])
@@ -77,7 +133,8 @@ def change_password():
         flash("You password has been updated", "success")
         return redirect(url_for("homepage"))
 
-    return render_template("user_password.html", user=current_user, form=form, title="Change password")
+    return render_template("users/user_password.html",
+                           user=current_user, form=form, title="Change password")
 
 
 @app.route("/profile", methods=["GET", "POST"])
@@ -97,12 +154,17 @@ def profile():
         db.session.commit()
         flash("Your account info updated!", "success")
         return redirect(url_for("profile"))
-    else:
-        form.username.data = current_user.username
-        form.email.data = current_user.email
 
-    image_file = url_for('static', filename="img/profiles/" + current_user.image_file)
-    return render_template("user_profile.html", title="Profile", user=current_user, image_file=image_file, form=form)
+    form.username.data = current_user.username
+    form.email.data = current_user.email
+
+    image_file = url_for(
+        'static',
+        filename="img/profiles/" +
+        current_user.image_file)
+    return render_template("users/user_profile.html", title="Profile",
+                           user=current_user, image_file=image_file, form=form)
+
 
 @app.route("/logout", methods=["GET"])
 @login_required
