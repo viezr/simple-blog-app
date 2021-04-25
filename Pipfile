@@ -14,6 +14,7 @@ email-validator = "*"
 psycopg2-binary = "*"
 pillow = "*"
 flask-mail = "*"
+flask-babel = "*"
 
 [dev-packages]
 

@@ -4,12 +4,12 @@ User route module
 from flask import request, redirect, render_template, flash, url_for
 from flask_login import logout_user, current_user, login_user, login_required
 from app import app, db
-from app.forms.user import RegisterForm, LoginForm, UpdateForm, PasswordForm, PasswordResetQueryForm, PasswordResetForm
+from app.forms.user import RegisterForm, LoginForm, UpdateForm, PasswordForm, RequestTokenForm, PasswordResetForm, ReportForm
 from app.models.user import User
 from app.models.post import Post
 from app.routes.general import homepage
 from app.utils.compressor import save_picture
-from app.utils.email import send_reset_email
+from app.utils.email import send_reset_email, send_report_email, send_confirmation_email
 
 
 @app.route("/user/<string:username>", methods=["GET"])
@@ -21,7 +21,7 @@ def user_public(username: str):
     page = request.args.get("page", 1, type=int)
     posts_db = Post.query.filter_by(
         author=user).order_by(
-        Post.time_updated.desc()).paginate(page=page,per_page=6)
+        Post.time_updated.desc()).paginate(page=page, per_page=6)
 
     return render_template("users/user_public.html", posts=posts_db,
                            user=user, title=f"{user.username}'s profile")
@@ -36,14 +36,18 @@ def reset_password_token():
         flash("User already logged in!", "success")
         return redirect(url_for('homepage'))
 
-    form = PasswordResetQueryForm()
+    form = RequestTokenForm()
     if request.method == "POST" and form.validate():
         user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
-        flash("An email has been sent with instructions", "info")
+        flash("An email has been sent with instructions for reset password", "info")
         return redirect(url_for("login"))
-    return render_template("users/user_password_token.html",
-                           title="Reset password form", form=form)
+
+    return render_template("users/user_request_token.html",
+                           title="Reset password form",
+                           legend="Reset Password",
+                           submit_button="Reset password",
+                           form=form)
 
 
 @app.route("/reset_password/<token>", methods=["GET", "POST"])
@@ -55,19 +59,64 @@ def reset_password(token):
         flash("User already logged in!", "success")
         return redirect(url_for('homepage'))
 
-    user = User.verify_reset_token(token)
+    user = User.verify_token(token)
     if user is None:
-        flash("This is invalid o expired token", "warning")
-        return redirect(url_for('reset_password'))
+        flash("This is an invalid or expired token", "warning")
+        return redirect(url_for("reset_password"))
+
     form = PasswordResetForm()
     if request.method == "POST" and form.validate():
-        user.set_password(form.password.data)
+        user.set_password(form.new_password_1.data)
         db.session.commit()
 
-        flash("Password successfully changed", "succsess")
+        flash("Password successfully changed", "success")
         return redirect(url_for("login"))
+
     return render_template("users/user_password_reset.html",
                            title="Reset password", form=form)
+
+
+@app.route("/confirmation", methods=["GET", "POST"])
+def confirmation():
+    """
+    Account confirmation request
+    """
+    form = RequestTokenForm()
+    if request.method == "POST" and form.validate():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_confirmation_email(user)
+        flash(
+            "An email has been sent with instructions for account confirmation",
+            "info")
+        return redirect(url_for("homepage"))
+
+    return render_template("users/user_request_token.html",
+                           title="Email confirmation",
+                           legend="Confirm your email address",
+                           submit_button="Send confirmation link",
+                           form=form)
+
+
+@app.route("/confirmation/<token>", methods=["GET", "POST"])
+def confirmation_set(token):
+    """
+    Set account confirmation status
+    """
+    if current_user.is_authenticated:
+        flash("User already logged in!", "success")
+        return redirect(url_for('homepage'))
+    user = User.verify_token(token)
+    if user is None:
+        flash("This is an invalid or expired token", "warning")
+        return redirect(url_for("confirmation"))
+
+    user.confirmed = True
+    db.session.commit()
+
+    flash(
+        "Congrats! Your account was successfully confirmed! Now you can log in!",
+        "success")
+    return redirect(url_for("login"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -75,6 +124,7 @@ def login():
     """
     Login route
     """
+
     if current_user.is_authenticated:
         flash("User already logged in!", "success")
         return redirect(url_for('homepage'))
@@ -84,6 +134,10 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash("Invalid email or password", "danger")
             return redirect(url_for("login"))
+        if not user.confirmed:
+            flash("To log in you have to confirm your account", "warning")
+            return redirect(url_for("confirmation"))
+
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get("next")
         return redirect(next_page) if next_page else redirect(
@@ -164,6 +218,21 @@ def profile():
         current_user.image_file)
     return render_template("users/user_profile.html", title="Profile",
                            user=current_user, image_file=image_file, form=form)
+
+
+@app.route("/report", methods=["GET", "POST"])
+@login_required
+def report():
+    """
+    Report route
+    """
+    form = ReportForm()
+    if request.method == "POST" and form.validate():
+        send_report_email(current_user, form.subject.data, form.report.data)
+        flash("An report email has been sent", "info")
+        return redirect(url_for("homepage"))
+
+    return render_template("users/user_report.html", title="Report", form=form)
 
 
 @app.route("/logout", methods=["GET"])

@@ -1,0 +1,75 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-04-25 18:58+0300\n"
+"PO-Revision-Date: 2021-04-25 18:59+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: app/errors/handlers.py:7
+msgid "Error 404"
+msgstr "Ошибка 404"
+
+#: app/errors/handlers.py:12
+msgid "Error 403"
+msgstr "Ошибка 403"
+
+#: app/errors/handlers.py:17
+msgid "Error 500"
+msgstr "Ошибка 500"
+
+#: app/forms/user.py:17
+msgid "Email"
+msgstr "Электронная почта"
+
+#: app/forms/user.py:18
+msgid "Password"
+msgstr "Пароль"
+
+#: app/forms/user.py:19
+msgid "Remember?"
+msgstr "Запомнить?"
+
+#: app/forms/user.py:20
+msgid "Log In Button"
+msgstr "Войти"
+
+#: app/templates/errors/403.html:4
+msgid "We've got some trouble | 403 - Access Denied"
+msgstr "У нас проблема | 403 -Доступ запрещен"
+
+#: app/templates/errors/403.html:6
+msgid "The requested resource requires an authentication"
+msgstr "Запрошенный ресурс доступен только зарегистрированным пользователям"
+
+#: app/templates/errors/404.html:4
+msgid "We've got some trouble | 404 - Resource not found"
+msgstr "У нас проблема | 404 - Ресурс не найден"
+
+#: app/templates/errors/404.html:6
+msgid ""
+"The requested resource could not be found but may be available again in "
+"the future."
+msgstr "Запрошенный ресурс не найден, но может быть доступен в будущем"
+
+#: app/templates/errors/500.html:4
+msgid "We've got some trouble | 500 - Webservice currently unavailable"
+msgstr "У нас проблема | 500 - Текущий сервис в данный момент недоступен"
+
+#: app/templates/errors/500.html:6
+msgid "An unexpected condition was encountered."
+msgstr "Обнаружена неизвестная ошибка"
+

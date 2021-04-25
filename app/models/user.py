@@ -31,6 +31,7 @@ class User(UserMixin, db.Model):
         nullable=False)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(256), nullable=False)
+    confirmed = db.Column(db.Boolean, default=False, nullable=False)
     image_file = db.Column(
         db.String(20),
         default="default.png",
@@ -66,15 +67,15 @@ class User(UserMixin, db.Model):
         """
         return check_password_hash(self.password_hash, semi_pure_pass)
 
-    def get_reset_token(self, expires_sec=1800):
+    def get_token(self, expires_sec=3600):
         """
         Get token for resetting password. Expired in 30 min
         """
-        ser = Serializer(app.config["SECRET_KEY"], expires_sec)
+        ser = Serializer(app.config["SECRET_KEY"], expires_in=expires_sec)
         return ser.dumps({"user_id": self.id}).decode("utf-8")
 
     @staticmethod
-    def verify_reset_token(token):
+    def verify_token(token):
         """
         Verify token for reset password
         """
