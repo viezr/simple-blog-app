@@ -7,6 +7,7 @@ import os
 class Config():
     """
     Config attributes
+    If MAIL_SUPPRESS_SEND is true, print message instead of send it by email
     """
 
     SECRET_KEY = os.environ.get("SECRET_KEY") or "LKJF887393UFOIJDKJjkjdf"

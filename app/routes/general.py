@@ -36,4 +36,4 @@ def about():
     """
     About page render
     """
-    return render_template("about.html", user=current_user, title="Blogs Page")
+    return render_template("about.html", user=current_user, title="About Page")

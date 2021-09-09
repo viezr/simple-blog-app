@@ -15,7 +15,7 @@
                                 <a class="p-0 m-0 mt-2 text-decoration-none" href="{{ url_for("post_id", _id=post.id) }}">{{ post.title }}</a>
                             </h5>
                             {% if post.image_file %}
-                                <p class="card-text">{{ post.body[:150] }} ...</p>
+                                <p class="card-text">{{ post.body[:100] }} ...</p>
                             {% else %}
                                 <p class="card-text">{{ post.body[:300] }} ...</p>
                             {% endif %}
@@ -42,7 +42,7 @@
         {% endif %}
     </div>
 
-    <div class="pt-3 ps-2">
+    <div class="pt-1 ps-2">
         {% for page_num in posts.iter_pages() %}
             {% if page_num %}
                 {% if posts.page == page_num %}

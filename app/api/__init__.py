@@ -1,5 +1,5 @@
 """
-REST API addition API for JSON input-output
+REST API addition for JSON input-output
 """
 from flask import jsonify
 from app import app

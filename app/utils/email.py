@@ -1,5 +1,5 @@
 """
-Module for sending email with token for reset password
+Module for sending email with token for reset password or confirmation
 """
 from flask import url_for
 from flask_mail import Message
@@ -8,7 +8,7 @@ from app import mail, app
 
 def send_reset_email(user):
     """
-    Send email with token for reset password
+    Send email with url/token for reset password
     """
     token = user.get_token()
 
@@ -24,16 +24,16 @@ def send_reset_email(user):
     Best Regards!
     """
 
-    if app.config["MAIL_SUPPRESS_SEND"] == "True":
+    if app.config["MAIL_SUPPRESS_SEND"] == True:
         print(f"""Mail supress mode is ON. Sending email to { user.email }.
-            Token: { token }""")
+            {url_for("reset_password", token=token, _external=True)}""")
     else:
         mail.send(msg)
 
 
 def send_confirmation_email(user):
     """
-    Send email with token for reset password
+    Send email with url/token for confirmation
     """
     token = user.get_token()
 
@@ -48,10 +48,9 @@ def send_confirmation_email(user):
 
     Best Regards!
     """
-
-    if app.config["MAIL_SUPPRESS_SEND"] == "True":
+    if app.config["MAIL_SUPPRESS_SEND"] == True:
         print(f"""Mail supress mode is ON. Sending email to { user.email }.
-            Token: { token }""")
+            {url_for("confirmation_set", token=token, _external=True)}""")
     else:
         mail.send(msg)
 
@@ -84,7 +83,7 @@ def send_report_email(user, subject, report):
     Best Regards!
     """
 
-    if app.config["MAIL_SUPPRESS_SEND"] == "True":
+    if app.config["MAIL_SUPPRESS_SEND"] == True:
         print(f"""
             Mail supress mode is ON.
             Sending email to { app.config["MAIL_USERNAME"] } from { user.email }. Body:
